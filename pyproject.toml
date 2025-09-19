@@ -1,9 +1,12 @@
-[project]
+[tool.poetry]
 name = "visual-search"
 version = "0.1.0"
-requires-python = "3.12.7"
+description = "A visual search app"
+readme = "README.md"
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
+python = "3.12.7"
 torchvision = "==0.23.0"
 torch = "==2.8.0"
 pandas = "==2.3.2"
@@ -13,6 +16,3 @@ qdrant-client = "==1.15.1"
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry]
-package-mode = false
