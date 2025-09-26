@@ -1,5 +1,5 @@
 from qdrant_client import QdrantClient
-from qdrant_client.models import VectorParams, PointIdsList
+from qdrant_client.models import VectorParams, PointIdsList, Distance
 from typing import List
 import logging
 
@@ -18,7 +18,7 @@ class VectorDB:
         cls, 
         database_name: str, 
         dimension: int, 
-        distance: str, 
+        distance: Distance, 
         client: QdrantClient,
         ):
 
@@ -121,9 +121,6 @@ class VectorDB:
         except Exception as e:
             logging.error(f"Failed to get number of vectors in Qdrant collection '{self.database_name}': {e}")
             return -1
-
-    def get_client(self) -> QdrantClient:
-        return self.client
 
     @classmethod
     def remove_db(cls, database_name: str, database_path: str, client: QdrantClient=None):
