@@ -11,7 +11,9 @@ torchvision = "==0.23.0"
 torch = "==2.8.0"
 pandas = "==2.3.2"
 qdrant-client = "==1.15.1"
-
+flask  = "==3.1.2"
+pydantic-settings = "==2.11.0"
+pytest = "==8.4.2"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

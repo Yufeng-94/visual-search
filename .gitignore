@@ -1,2 +1,21 @@
 # env files
 *.lock
+
+# Python
+__pycache__/
+*.pyc
+
+# VSCode
+.vscode/
+
+# pytest
+*.pytest_cache/
+
+# qdrant db
+tests/integration/vector_db_test/
+
+# image files
+*.jpg
+
+# torch cache
+*.pth
