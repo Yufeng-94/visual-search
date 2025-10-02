@@ -35,3 +35,8 @@ class ImageStorage:
         existing_image_urls = [url for url in valid_image_urls if os.path.exists(url)]
 
         return existing_image_urls
+    
+    def clear_storage(self):
+        if os.path.exists(self.image_dir):
+            shutil.rmtree(self.image_dir)
+            os.mkdir(self.image_dir)

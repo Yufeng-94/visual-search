@@ -5,9 +5,7 @@ import torch
 from typing import Tuple
 
 def load_image_encoder(device: torch.device) -> Tuple[PreTrainedImageEncoder, Compose]:
-
-    # TODO: env var 'TORCH_HOME' should set in config.py
-    
+ 
     # Init model with pre-trained weights
     pre_trained_weights = ResNet50_Weights.IMAGENET1K_V2
     model = resnet50(weights=pre_trained_weights)

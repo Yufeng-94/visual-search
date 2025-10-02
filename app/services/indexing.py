@@ -1,6 +1,7 @@
 import json
 from typing import List
-from app.db.vector_db import QdrantVectorDB
+from app.db.vector_db import VectorDB
+from app.db.image_storage import ImageStorage
 from app.models.image_encoder import PreTrainedImageEncoder
 import torch
 import torchvision
@@ -16,8 +17,8 @@ class IndexService:
     """
     def __init__(
             self, 
-            vector_db: QdrantVectorDB,
-            image_storeage, # TBD: type
+            vector_db: VectorDB,
+            image_storage: ImageStorage,
             image_encoder: PreTrainedImageEncoder,
             image_process: torchvision.transforms, # TBD: type
             device: torch.device,
@@ -25,7 +26,7 @@ class IndexService:
         self.vector_db = vector_db
         self.image_encoder = image_encoder
         self.image_process = image_process
-        self.image_storage = image_storeage
+        self.image_storage = image_storage
         self.device = device
 
     def index_images(
@@ -39,20 +40,39 @@ class IndexService:
         # Index images by batch
         for i in range(0, len(image_paths), batch_size):
             try:
+                # prepare batch
                 batch_image_paths = image_paths[i: i+batch_size]
                 batch_metadata_paths = metadata_paths[i: i+batch_size]
+            except Exception as e:
+                logging.error(f"Failed to prepare batch {i//batch_size}.")
+                raise e
 
-                # get image tensors
-                batch_image_tensors = self._load_images(batch_image_paths, self.image_process)
-                batch_image_tensors = batch_image_tensors.to(self.device)
+            try:
+                # Upload images to image storage
+                image_urls = self.image_storage.upload_images(batch_image_paths)
+            except Exception as e:
+                logging.error(f"Failed to upload images to image storage: {e}")
+                raise e
 
+            try:
                 # get image metadata
                 batch_metedata = self._load_metadata(batch_metadata_paths, batch_image_paths)
+                # add image URLs to metadata
+                for j in range(len(batch_metedata)):
+                    batch_metedata[j]['image_url'] = image_urls[j]
+            except Exception as e:
+                logging.error(f"Failed to load metadata for batch {i//batch_size}: {e}")
+                raise e
+
+            try:
+                # get image tensors
+                batch_image_tensors = self._load_process_images(batch_image_paths, self.image_process)
+                batch_image_tensors = batch_image_tensors.to(self.device)
 
                 # batch encode images
                 with torch.no_grad():
                     batch_image_embeddings = self.image_encoder(batch_image_tensors)
-                batch_image_embeddings = batch_image_embeddings.cpu().numpy().tolist() # to confirm to List[List]
+                batch_image_embeddings = batch_image_embeddings.cpu().numpy().tolist()
 
                 # Upload to vector DB
                 self.vector_db.add_batch_images(
@@ -65,19 +85,13 @@ class IndexService:
 
             except Exception as e:
                 logging.error(f"Failed to add images to Qdrant collection '{self.vector_db.database_name}': {e}")
-                continue
+                raise e
 
-            # Upload images to image storage
-            try:
-                self.image_storage.upload_images(batch_image_paths, batch_metedata)
-            except Exception as e:
-                logging.error(f"Failed to upload images to image storage: {e}")
-                continue
 
-    def _load_images(
+    def _load_process_images(
             self, 
             image_paths: List[str], 
-            transforms: torchvision.transforms
+            transforms: torchvision.transforms # TBD: type
             ) -> torch.Tensor:
         
         image_tensors = []
@@ -114,8 +128,7 @@ class IndexService:
 
             # Add other metadata
             ## NOTE: could replace with Path
-            metadata['image_name'] = m_p.split('/')[-1].replace('.json', '') 
-            metadata['image_path'] = i_p
+            metadata['image_name'] = m_p.split('/')[-1].replace('.json', '')
 
             loaded_metadata.append(metadata)
 
