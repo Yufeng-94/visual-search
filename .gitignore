@@ -17,8 +17,5 @@ tests/integration/data/
 # qdrant db
 tests/integration/vector_db_test/
 
-# image files
-*.jpg
-
 # torch cache
 *.pth
