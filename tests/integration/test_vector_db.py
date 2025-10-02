@@ -25,7 +25,7 @@ def test_vector_db_create(qdrant_client, vector_db_config):
 
     assert db_info.config.params.vectors.size == dimension
     assert db_info.config.params.vectors.distance == distance
-    assert created_db.name == database_name
+    assert created_db.database_name == database_name
 
     # Cleanup
     qdrant_client.delete_collection(collection_name=database_name)
