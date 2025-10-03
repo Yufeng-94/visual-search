@@ -68,7 +68,7 @@ class SearchEndpoint:
     
     def _fetch_response(
             self, 
-            retrieved_image_metadata: List[dict], 
+            retrieved_image_metadata: List[str], 
             search_id: str, 
             processing_time_ms: int
             ) -> dict:

@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     max_content_length: int = 16 * 1024 *1024
 
     # Search service settings
-    top_k: int = 5
+    top_k: int = 4
 
     # Indexing service settings
     batch_size: int = 32
