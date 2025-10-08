@@ -20,3 +20,6 @@ tests/integration/vector_db_test/
 
 # torch cache
 *.pth
+
+# .sh scripts
+scripts/*.sh
