@@ -91,7 +91,7 @@ class IndexService:
     def _load_process_images(
             self, 
             image_paths: List[str], 
-            transforms: torchvision.transforms # TBD: type
+            transforms: torchvision.transforms.Compose,
             ) -> torch.Tensor:
         
         image_tensors = []
