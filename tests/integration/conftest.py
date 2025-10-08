@@ -62,6 +62,10 @@ class IntegrationTestSettings(BaseSettings):
     image_dir: str = "tests/test_data/images"
     metadata_dir: str = "tests/test_data/metadata"
 
+    # Index page dir: NOTE: change to Path
+    template_dir : str = '../templates'
+    static_dir: str = '../static'
+
 test_settings = IntegrationTestSettings()
 
 @pytest.fixture

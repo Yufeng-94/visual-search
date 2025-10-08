@@ -11,8 +11,9 @@ __pycache__/
 # pytest
 *.pytest_cache/
 
-# test data
+# data
 tests/integration/data/
+data/
 
 # qdrant db
 tests/integration/vector_db_test/
