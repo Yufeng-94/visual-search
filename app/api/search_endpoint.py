@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import logging
 import os
 from app.services.search import SearchService
 from typing import List
@@ -19,12 +20,15 @@ class SearchEndpoint:
 
         # Save uploaded image
         uploaded_file_path = self._upload_file()
+        logging.info(f"Uploaded file path: {uploaded_file_path}")
 
         # Image search
         retrieved_image_metadata = self._search_image(uploaded_file_path)
+        logging.info(f"Retrieved {len(retrieved_image_metadata)} image metadata.")
 
         # Remove uploaded image
         os.remove(uploaded_file_path)
+        logging.info(f"Removed uploaded file: {uploaded_file_path}")
 
         # Return response
         processing_time_ms = (time.time() - processing_time_start) * 1000

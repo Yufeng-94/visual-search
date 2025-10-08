@@ -35,8 +35,10 @@ class Settings(BaseSettings):
     batch_size: int = 32
     parallel: int = 4
 
-    # Index page dir
-    index_html_dir: str = 'index.html'
+    # Index page dir: NOTE: change to Path
+    template_dir : str = '../templates'
+    static_dir: str = '../static'
+    image_storage_file_location: str = '../data/image_storage'
 
 
 # TODO: convert to Path

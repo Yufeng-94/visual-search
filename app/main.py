@@ -1,7 +1,7 @@
 # App initialization
 import os
 from typing import Optional
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 from pydantic_settings import BaseSettings
 import logging
 from app.core.config import Settings
@@ -18,7 +18,11 @@ def create_app(settings: Optional[BaseSettings]=None) -> Flask:
         settings = Settings() # default settings
 
     # Init Flask app instance
-    app = Flask(__name__) # NOTE: change to "visual-search" package name?
+    app = Flask(
+        __name__, 
+        template_folder=settings.template_dir,
+        static_folder=settings.static_dir,
+        ) # NOTE: change to "visual-search" package name?
 
     # Config upload folder
     app.config['UPLOAD_FOLDER'] = settings.upload_dir
@@ -91,7 +95,22 @@ def create_app(settings: Optional[BaseSettings]=None) -> Flask:
     @app.route('/')
     def index():
         return render_template(
-            settings.index_html_dir
+            'index.html'
         )
     
+    @app.route('/data/image_storage/<path:filename>')
+    def serve_image(filename):
+        return send_from_directory(settings.image_storage_file_location, filename)
+    
     return app
+
+
+if __name__ == '__main__':
+    app = create_app()
+
+    app.run(
+        debug=False,
+        use_reloader=False,
+        use_debugger=False, 
+        threaded=True,
+    )
