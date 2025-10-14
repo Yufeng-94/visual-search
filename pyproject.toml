@@ -2,11 +2,23 @@
 name = "visual-search"
 version = "0.1.0"
 description = "A visual search app"
-readme = "README.md"
 packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
-python = "3.12.7"
+python = ">=3.9,<3.13" 
+qdrant-client = "==1.15.1"
+flask = "==3.1.2"
+pydantic-settings = "==2.11.0"
+pytest = "==8.4.2"
+gunicorn = "==23.0.0"
+
+[tool.poetry.group.preinstalled.dependencies]
+torch = "==2.8.0"
+torchvision = "==0.23.0"
+requests = "==2.32.5"
+
+
+[tool.poetry.group.dev.dependencies]
 torchvision = "==0.23.0"
 torch = "==2.8.0"
 pandas = "==2.3.2"
