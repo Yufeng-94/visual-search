@@ -1,0 +1,11 @@
+services:
+  app:
+    build: ./app
+    container_name: visual_search_app
+  nginx:
+    build: ./nginx
+    container_name: visual_search_nginx
+    depends_on:
+      - app
+    ports:
+      - "80:80"
