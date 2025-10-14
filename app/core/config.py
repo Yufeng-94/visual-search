@@ -36,8 +36,8 @@ class Settings(BaseSettings):
     parallel: int = 4
 
     # Index page dir: NOTE: change to Path
-    template_dir : str = '../templates'
-    static_dir: str = '../static'
+    template_dir : str = 'templates'
+    static_dir: str = 'static'
     image_storage_file_location: str = '../data/image_storage'
 
 
