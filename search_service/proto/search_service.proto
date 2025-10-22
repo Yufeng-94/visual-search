@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+service SearchService {
+    rpc search(SearchRequest) returns (SearchResponse);
+}
+
+message SearchRequest {
+    bytes jpg_image = 1;
+    int32 max_results = 2;
+}
+
+message SearchResponse {
+    repeated ImageResult results = 1;
+}
+
+message ImageResult {
+    string image_url = 1;
+    float similarity_score = 2;
+    int32 width = 3;
+    int32 height = 4;
+}
