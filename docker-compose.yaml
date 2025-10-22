@@ -1,9 +1,10 @@
 services:
   app:
-    build: ./app
+    image: yufeng94/visual-search:v1
     container_name: visual_search_app
+
   nginx:
-    build: ./nginx
+    image: yufeng94/nginx:v1
     container_name: visual_search_nginx
     depends_on:
       - app
