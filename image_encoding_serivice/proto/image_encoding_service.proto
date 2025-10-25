@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service ImageEncodingService {
+    rpc encode_image (ImageRequest) returns (ImageResponse);
+}
+
+message ImageRequest {
+    string img_src_url = 1;
+    string job_id = 2;
+}
+
+message ImageResponse {
+    repeated float encoded_image = 1;
+    string job_id = 2;
+}
