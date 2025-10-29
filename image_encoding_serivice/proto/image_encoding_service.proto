@@ -5,7 +5,7 @@ service ImageEncodingService {
 }
 
 message ImageRequest {
-    string img_src_url = 1;
+    bytes query_image = 1;
     string job_id = 2;
 }
 
