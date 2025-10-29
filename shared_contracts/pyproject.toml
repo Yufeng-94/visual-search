@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "shared_contracts"
+version = "1.0.0"
+description = "API contracts for visual search app"
+packages = [
+    {include = "shared_contracts"}
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+grpcio = "==1.75.1"
+grpcio-tools = "==1.75.1"
+pydantic-settings = "==2.11.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

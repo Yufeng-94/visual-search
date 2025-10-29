@@ -1,0 +1,16 @@
+syntax  = "proto3";
+
+service IndexingService {
+    rpc index_images (IndexImagesRequest) returns (IndexImagesResponse);
+}
+
+message IndexImagesRequest {
+    string job_id = 1;
+    string image_bucket_url = 2;
+}
+
+message IndexImagesResponse {
+    string job_id = 1;
+    bool success = 2;
+    string message = 3;
+}
