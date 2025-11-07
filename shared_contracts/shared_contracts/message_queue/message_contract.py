@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from message_queue.message_channels import MessageChannels
-from message_queue.message_data_models import (
+from shared_contracts.message_queue.message_channels import MessageChannels
+from shared_contracts.message_queue.message_data_models import (
     ImageEncodingCommand,
     EncodingStart,
     EncodingResults

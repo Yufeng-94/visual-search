@@ -6,7 +6,8 @@ service IndexingService {
 
 message IndexImagesRequest {
     string job_id = 1;
-    string image_bucket_url = 2;
+    string image_bucket = 2;
+    string metadata_bucket = 3;
 }
 
 message IndexImagesResponse {

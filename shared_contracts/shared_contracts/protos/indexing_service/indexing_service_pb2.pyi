@@ -5,12 +5,14 @@ from typing import ClassVar as _ClassVar, Optional as _Optional
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class IndexImagesRequest(_message.Message):
-    __slots__ = ("job_id", "image_bucket_url")
+    __slots__ = ("job_id", "image_bucket", "metadata_bucket")
     JOB_ID_FIELD_NUMBER: _ClassVar[int]
-    IMAGE_BUCKET_URL_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_BUCKET_FIELD_NUMBER: _ClassVar[int]
+    METADATA_BUCKET_FIELD_NUMBER: _ClassVar[int]
     job_id: str
-    image_bucket_url: str
-    def __init__(self, job_id: _Optional[str] = ..., image_bucket_url: _Optional[str] = ...) -> None: ...
+    image_bucket: str
+    metadata_bucket: str
+    def __init__(self, job_id: _Optional[str] = ..., image_bucket: _Optional[str] = ..., metadata_bucket: _Optional[str] = ...) -> None: ...
 
 class IndexImagesResponse(_message.Message):
     __slots__ = ("job_id", "success", "message")

@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n?shared_contracts/protos/indexing_service/indexing_service.proto\">\n\x12IndexImagesRequest\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12\x18\n\x10image_bucket_url\x18\x02 \x01(\t\"G\n\x13IndexImagesResponse\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12\x0f\n\x07success\x18\x02 \x01(\x08\x12\x0f\n\x07message\x18\x03 \x01(\t2L\n\x0fIndexingService\x12\x39\n\x0cindex_images\x12\x13.IndexImagesRequest\x1a\x14.IndexImagesResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n?shared_contracts/protos/indexing_service/indexing_service.proto\"S\n\x12IndexImagesRequest\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12\x14\n\x0cimage_bucket\x18\x02 \x01(\t\x12\x17\n\x0fmetadata_bucket\x18\x03 \x01(\t\"G\n\x13IndexImagesResponse\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12\x0f\n\x07success\x18\x02 \x01(\x08\x12\x0f\n\x07message\x18\x03 \x01(\t2L\n\x0fIndexingService\x12\x39\n\x0cindex_images\x12\x13.IndexImagesRequest\x1a\x14.IndexImagesResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,9 +32,9 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'shared_contracts.protos.ind
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_INDEXIMAGESREQUEST']._serialized_start=67
-  _globals['_INDEXIMAGESREQUEST']._serialized_end=129
-  _globals['_INDEXIMAGESRESPONSE']._serialized_start=131
-  _globals['_INDEXIMAGESRESPONSE']._serialized_end=202
-  _globals['_INDEXINGSERVICE']._serialized_start=204
-  _globals['_INDEXINGSERVICE']._serialized_end=280
+  _globals['_INDEXIMAGESREQUEST']._serialized_end=150
+  _globals['_INDEXIMAGESRESPONSE']._serialized_start=152
+  _globals['_INDEXIMAGESRESPONSE']._serialized_end=223
+  _globals['_INDEXINGSERVICE']._serialized_start=225
+  _globals['_INDEXINGSERVICE']._serialized_end=301
 # @@protoc_insertion_point(module_scope)
