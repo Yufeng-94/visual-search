@@ -1,0 +1,203 @@
+openapi: 3.0.4
+info:
+  description: API Contract between client and entry point
+  title: API Contract between client and entry point
+  version: 2.0.0
+servers:
+- url: "http://{host}:{port}/api"
+  variables:
+    host:
+      default: localhost
+    port:
+      default: "8080"
+paths:
+  /index:
+    post:
+      description: "A request to index images to database by \nspecifying image storage\
+        \ and metadata buckets.\n"
+      operationId: index_images
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/indexImages_request"
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                job_id: 123e4567-e89b-12d3-a456-426614174000
+                message: Indexing started successfully
+              schema:
+                $ref: "#/components/schemas/indexImages_200_response"
+          description: Indexing successful
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/indexImages_400_response"
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/indexImages_500_response"
+          description: Internal server error
+      summary: Indexing images to database
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /search:
+    post:
+      description: |
+        A request to search similar images by uploading an image.
+      operationId: search_images
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/searchImages_request"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/searchImages_200_response"
+          description: Search successful
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/indexImages_400_response"
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/indexImages_500_response"
+          description: Internal server error
+      summary: Searching similar images
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+components:
+  responses:
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/indexImages_400_response"
+      description: Bad request
+    ServerError:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/indexImages_500_response"
+      description: Internal server error
+  schemas:
+    RetrievedImage:
+      example:
+        image_url: https://openapi-generator.tech
+        similarity_score: 0.8008281904610115
+      properties:
+        image_url:
+          format: uri
+          title: image_url
+          type: string
+        similarity_score:
+          title: similarity_score
+          type: number
+      required:
+      - image_url
+      - similarity_score
+      title: RetrievedImage
+      type: object
+    indexImages_request:
+      properties:
+        image_storage_bucket:
+          title: image_storage_bucket
+          type: string
+        metadata_storage_bucket:
+          title: metadata_storage_bucket
+          type: string
+      required:
+      - image_storage_bucket
+      - metadata_storage_bucket
+      title: indexImages_request
+      type: object
+    indexImages_200_response:
+      example:
+        job_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        message: message
+      properties:
+        job_id:
+          format: uuid
+          title: job_id
+          type: string
+        message:
+          title: message
+          type: string
+      required:
+      - job_id
+      - message
+      title: indexImages_200_response
+      type: object
+    indexImages_400_response:
+      example:
+        error_message: error_message
+        error_code: INVALID_FORMAT
+      properties:
+        error_code:
+          enum:
+          - INVALID_FORMAT
+          - FILE_NOT_FOUND
+          - MISSING_FIELDS
+          title: error_code
+          type: string
+        error_message:
+          title: error_message
+          type: string
+      title: indexImages_400_response
+      type: object
+    indexImages_500_response:
+      example:
+        error_message: error_message
+      properties:
+        error_message:
+          title: error_message
+          type: string
+      title: indexImages_500_response
+      type: object
+    searchImages_request:
+      properties:
+        file:
+          description: The image file to be uploaded for searching similar images.
+          format: binary
+          type: string
+      required:
+      - file
+      type: object
+    searchImages_200_response:
+      example:
+        similar_images:
+        - image_url: https://openapi-generator.tech
+          similarity_score: 0.8008281904610115
+        - image_url: https://openapi-generator.tech
+          similarity_score: 0.8008281904610115
+        processing_ms: 6.027456183070403
+        search_id: search_id
+      properties:
+        similar_images:
+          items:
+            $ref: "#/components/schemas/RetrievedImage"
+          title: similar_images
+          type: array
+        processing_ms:
+          format: integer
+          title: processing_ms
+          type: number
+        search_id:
+          title: search_id
+          type: string
+      required:
+      - processing_ms
+      - search_id
+      - similar_images
+      title: searchImages_200_response
+      type: object

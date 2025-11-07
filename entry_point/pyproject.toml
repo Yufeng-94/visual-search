@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "entry-point"
+version = "0.1.0"
+description = "Entry point for visual search app"
+packages = [
+    {include = "app"},
+    {include = "openapi_server"},
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13" 
+grpcio = "==1.75.1"
+grpcio-tools = "==1.75.1"
+pytest = "==8.4.2"
+flask  = "==3.1.2"
+requests = "==2.32.5"
+gunicorn = "==23.0.0"
+connexion = "==2.15.1"
+python-dateutil = "==2.9.0"
+a2wsgi = "==1.10.10"
+shared_contracts = {path = "../shared_contracts", develop = true}
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
