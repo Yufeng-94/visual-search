@@ -1,7 +1,7 @@
 import grpc
 from concurrent import futures
 from app.search_servicer import SearchServicer
-from proto.search_service_pb2_grpc import add_SearchServiceServicer_to_server
+from shared_contracts.protos.search_service.search_service_pb2_grpc import add_SearchServiceServicer_to_server
 
 def serve():
     # Create a gRPC server

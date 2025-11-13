@@ -1,5 +1,5 @@
-from proto.search_service_pb2_grpc import SearchServiceServicer
-from proto.search_service_pb2 import SearchRequest, SearchResponse, ImageResult
+from shared_contracts.protos.search_service.search_service_pb2_grpc import SearchServiceServicer
+from shared_contracts.protos.search_service.search_service_pb2 import SearchRequest, SearchResponse, ImageResult
 from grpc import ServicerContext
 from app.search_engine import SearchEngine
 
@@ -24,15 +24,4 @@ class SearchServicer(SearchServiceServicer):
             max_results=max_results,
         )
 
-        results = []
-        for item in response:
-            result = ImageResult(
-                image_url=item['image_url'],
-                similarity_score=item['similarity_score'],
-                width=item['width'],
-                height=item['height'],
-            )
-            results.append(result)
-
-        # Return response
-        return SearchResponse(results=results)
+        return response
