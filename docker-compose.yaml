@@ -1,11 +1,96 @@
+
 services:
-  app:
-    build: ./app
-    container_name: visual_search_app
-  nginx:
-    build: ./nginx
-    container_name: visual_search_nginx
-    depends_on:
-      - app
+  # Infrastructure services
+  redis:
+    image: redis:8.2-alpine
+    container_name: redis
     ports:
-      - "80:80"
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    command: redis-server --appendonly yes 
+    restart: unless-stopped
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"  # LocalStack Gateway
+    environment:
+      - SERVICES=s3
+      - DEFAULT_REGION=us-east-1
+      - PERSISTENCE=1
+      - DEBUG=1
+    volumes:
+      - ./data/localstack:/data # Persistent storage
+    restart: unless-stopped
+    
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: unless-stopped
+    container_name: qdrant
+    ports:
+      - 6334:6334
+      - 6333:6333
+    volumes:
+      - ./data/vector_db:/qdrant/storage
+      - ./infra/qdrant/config.yaml:/qdrant/config/production.yaml
+
+  nginx:
+    image: yufeng94/vs-nginx:v1.0
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+
+  # Application service
+  image-encoding-service:
+    image: yufeng94/vs-image-encoding-service:v1.0
+    container_name: image-encoding-service
+    ports:
+      - "50071:50071"
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - localstack
+
+  indexing-service:
+    image: yufeng94/vs-indexing-service:v1.0
+    container_name: indexing-service
+    ports:
+      - "50072:50072"
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - localstack
+      - qdrant
+      - image-encoding-service
+  
+  search-service:
+    image: yufeng94/vs-search-service:v1.0
+    container_name: search-service
+    ports:
+      - "50051:50051"
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - localstack
+      - qdrant
+      - image-encoding-service
+
+  entry-point:
+    image: yufeng94/vs-entry-point:v1.0
+    container_name: entry-point
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - localstack
+      - qdrant
+      - image-encoding-service
+      - indexing-service
+      - search-service
+
+  
+
