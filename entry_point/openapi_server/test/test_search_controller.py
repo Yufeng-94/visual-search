@@ -45,7 +45,7 @@ def test_search():
 
         image_file = "openapi_server/test/test_image.jpg"
         with open(image_file, 'rb') as f:
-            data = {'file': (f, image_file)}
+            data = {'file': f}
             print("Test image loaded")
 
             response = client.post(

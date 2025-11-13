@@ -1,9 +1,11 @@
 import connexion
+from flask import render_template
 
+from openapi_server.models.get_health200_response import GetHealth200Response  # noqa: E501
+from openapi_server.models.get_health500_response import GetHealth500Response  # noqa: E501
 from openapi_server.models.index_images200_response import IndexImages200Response  # noqa: E501
+from openapi_server.models.index_images400_response import IndexImages400Response  # noqa: E501
 from openapi_server.models.index_images_request import IndexImagesRequest  # noqa: E501
-from openapi_server.models.inline_object import InlineObject  # noqa: E501
-from openapi_server.models.inline_object1 import InlineObject1  # noqa: E501
 from openapi_server.models.search_images200_response import SearchImages200Response  # noqa: E501
 from openapi_server import util
 
@@ -12,6 +14,28 @@ from app.api.search_service import SearchService
 
 indexing_service = IndexingService()
 search_service = SearchService()
+
+def get_health():  # noqa: E501
+    """Health check endpoint
+
+     # noqa: E501
+
+
+    :rtype: Union[GetHealth200Response, Tuple[GetHealth200Response, int], Tuple[GetHealth200Response, int, Dict[str, str]]
+    """
+    return GetHealth200Response(status="Server is running").to_dict()
+
+
+def get_root():  # noqa: E501
+    """Root page
+
+     # noqa: E501
+
+
+    :rtype: Union[str, Tuple[str, int], Tuple[str, int, Dict[str, str]]
+    """
+    return render_template('index.html')
+
 
 
 def index_images(body=None):  # noqa: E501

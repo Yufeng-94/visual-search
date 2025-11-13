@@ -21,7 +21,7 @@ class MockedIndexingServicer(IndexingServiceServicer):
 def start_test_server():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     add_IndexingServiceServicer_to_server(MockedIndexingServicer(), server)
-    server.add_insecure_port('[::]:50073')
+    server.add_insecure_port('[::]:50072')
     server.start()
     server.wait_for_termination()
     return server

@@ -4,14 +4,26 @@ info:
   title: API Contract between client and entry point
   version: 2.0.0
 servers:
-- url: "http://{host}:{port}/api"
+- url: "http://{host}:{port}/"
   variables:
     host:
       default: localhost
     port:
       default: "8080"
 paths:
-  /index:
+  /:
+    get:
+      operationId: get_root
+      responses:
+        "200":
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Root page response
+      summary: Root page
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/index:
     post:
       description: "A request to index images to database by \nspecifying image storage\
         \ and metadata buckets.\n"
@@ -41,11 +53,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/indexImages_500_response"
+                $ref: "#/components/schemas/getHealth_500_response"
           description: Internal server error
       summary: Indexing images to database
       x-openapi-router-controller: openapi_server.controllers.default_controller
-  /search:
+  /api/search:
     post:
       description: |
         A request to search similar images by uploading an image.
@@ -72,9 +84,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/indexImages_500_response"
+                $ref: "#/components/schemas/getHealth_500_response"
           description: Internal server error
       summary: Searching similar images
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /health:
+    get:
+      operationId: get_health
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getHealth_200_response"
+          description: Service is healthy
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getHealth_500_response"
+          description: Internal server error
+      summary: Health check endpoint
       x-openapi-router-controller: openapi_server.controllers.default_controller
 components:
   responses:
@@ -88,7 +118,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/indexImages_500_response"
+            $ref: "#/components/schemas/getHealth_500_response"
       description: Internal server error
   schemas:
     RetrievedImage:
@@ -107,6 +137,26 @@ components:
       - image_url
       - similarity_score
       title: RetrievedImage
+      type: object
+    getHealth_200_response:
+      example:
+        status: status
+      properties:
+        status:
+          title: status
+          type: string
+      required:
+      - status
+      title: getHealth_200_response
+      type: object
+    getHealth_500_response:
+      example:
+        error_message: error_message
+      properties:
+        error_message:
+          title: error_message
+          type: string
+      title: getHealth_500_response
       type: object
     indexImages_request:
       properties:
@@ -154,15 +204,6 @@ components:
           title: error_message
           type: string
       title: indexImages_400_response
-      type: object
-    indexImages_500_response:
-      example:
-        error_message: error_message
-      properties:
-        error_message:
-          title: error_message
-          type: string
-      title: indexImages_500_response
       type: object
     searchImages_request:
       properties:

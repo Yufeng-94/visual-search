@@ -51,7 +51,7 @@ function handleFileUpload (file) {
         formData.append('file', file);
 
 
-        fetch('/upload', {method: 'POST', body: formData})
+        fetch('/api/search', {method: 'POST', body: formData})
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -89,9 +89,9 @@ function displaySearchResults(data) {
     // Clear existing content
     resultsImg.innerHTML = '';
 
-    data.retrieved_images.forEach(imgUrl => {
+    data.similar_images.forEach(imgMeta => {
         const imgElement = document.createElement('img');
-        imgElement.src = imgUrl;
+        imgElement.src = imgMeta.image_url;
         resultsImg.appendChild(imgElement);
     });
 

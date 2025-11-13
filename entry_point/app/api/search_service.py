@@ -13,7 +13,7 @@ class SearchService:
     '''
     def __init__(self):
         # Init search service client
-        self.channel = grpc.insecure_channel('localhost:50071')
+        self.channel = grpc.insecure_channel('search-service:50051')
         self.stub = SearchServiceStub(self.channel)
 
     def search(self, file):

@@ -10,7 +10,7 @@ import uuid
 
 class IndexingService:
     def __init__(self):
-        self.channel = grpc.insecure_channel("localhost:50073")
+        self.channel = grpc.insecure_channel("indexing-service:50072")
         self.stub = IndexingServiceStub(self.channel)
 
     def index(self, index_request: IndexImagesRequestRest):

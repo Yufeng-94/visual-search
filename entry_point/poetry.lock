@@ -1966,7 +1966,7 @@ optional = false
 python-versions = ">=3.9,<3.13"
 groups = ["main"]
 files = []
-develop = true
+develop = false
 
 [package.dependencies]
 grpcio = "==1.75.1"
@@ -2274,4 +2274,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.13"
-content-hash = "45077f5e2781c338da5af18876f7e6dfa003bacf18adbd7bb76bd9acc7df319a"
+content-hash = "c98acff7f7894b6f0605e237ac04901072c9e736d167380a2eff291cf37c0b2b"
