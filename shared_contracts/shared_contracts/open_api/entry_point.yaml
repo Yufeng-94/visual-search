@@ -4,7 +4,36 @@ info:
   version: 2.0.0
   description: API Contract between client and entry point 
 paths:
-  /index:
+  /:
+    get:
+      operationId: getRoot
+      summary: Root page
+      responses:
+        "200":
+          description: Root page response
+          content:
+            text/html:
+              schema:
+                type: string
+  /health:
+    get:
+      operationId: getHealth
+      summary: Health check endpoint
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                  - status
+        "500":
+          $ref: '#/components/responses/ServerError'
+  /api/index:
     post:
       operationId: indexImages
       summary: Indexing images to database
@@ -47,7 +76,7 @@ paths:
               required:
                 - image_storage_bucket
                 - metadata_storage_bucket
-  /search:
+  /api/search:
     post:
       operationId: searchImages
       summary: Searching similar images
@@ -91,7 +120,7 @@ paths:
               required:
                 - file
 servers:
-  - url: http://{host}:{port}/api 
+  - url: http://{host}:{port}/ 
     variables:
       host:
         default: localhost
