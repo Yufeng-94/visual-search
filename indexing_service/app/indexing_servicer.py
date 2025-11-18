@@ -26,20 +26,20 @@ class IndexingServicer(IndexingServiceServicer):
     def __init__(self):
         self.s3_client = boto3.client(
                 's3', 
-                endpoint_url='http://localhost:4566',
+                endpoint_url='http://localstack:4566',
                 aws_access_key_id="test",  # Placeholder credentials
                 aws_secret_access_key="test",  # Placeholder credentials
                 )
         
         self.qdrant_client = QdrantClient(
-            host="localhost", 
+            host="qdrant", 
             grpc_port=6334, 
             prefer_grpc=True,
             timeout=30,
         )
 
         self.redis_client = redis.Redis(
-            host='localhost', 
+            host='redis', 
             port=6379, 
         )
 
@@ -72,23 +72,6 @@ class IndexingServicer(IndexingServiceServicer):
             self.router_started = True
             print(f"Started Redis router for {MessageChannels.INDEXING_EVENTS}")
         try:
-            # # process each image aysnc
-            # tasks = [
-            #     process_single_image(
-            #         src_image_bucket,
-            #         image_key,
-            #         metadata_bucket,
-            #         metadata_key,
-            #         dest_image_bucket,
-            #         self.s3_client,
-            #         self.qdrant_client,
-            #         self.redis_client,
-            #     )
-            #     for image_key, metadata_key in zip(image_keys, metadata_keys)
-            # ]
-
-            # # return response
-            # responses = asyncio.gather(*tasks, return_exceptions=True)
             responses = [
                 process_single_image(
                     src_image_bucket,
@@ -105,5 +88,9 @@ class IndexingServicer(IndexingServiceServicer):
         except Exception as e:
             raise Exception(f"Indexing failed due to error {e}")
 
-        return responses
+        return IndexImagesResponse(
+            job_id=indexing_job_id,
+            success=True,
+            message=str(responses)
+        )
 
