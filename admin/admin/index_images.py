@@ -6,7 +6,7 @@ request_data = {
     'metadata_storage_bucket': 'source-metadata-bucket',
 }
 
-url = 'http://localhost:8000/api/index'
+url = 'http://localhost/api/index'
 
 response = requests.post(
     url=url,
