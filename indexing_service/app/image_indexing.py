@@ -168,9 +168,11 @@ def store_in_vector_db(
         collection_name: str = VectorDBContracts.collection_name,
         ):
 
-    try:   
+    try:
+        point_id = image_metadata.get("image_key", '000001.jpg').strip('.jpg')
+        point_id = int(point_id)
         point = PointStruct(
-            id=encoding_result.job_id,
+            id=point_id,
             vector=encoding_result.encoded_image,
             payload=image_metadata,
         )
