@@ -7,6 +7,9 @@ from app.image_encoder.image_encoder_loader import load_image_encoder
 import torch
 from torchvision.io import decode_image
 import numpy as np
+import logging
+
+logger = logging.getLogger("image_encoding_service.indexing_worker") # Inherits module logger
 
 class ImageEncodingWorker:
     """
@@ -46,7 +49,7 @@ class ImageEncodingWorker:
                 for message_id, raw_message in message_list:
                     # Process each message
                     message = raw_message.get(b'data').decode()
-                    print(f"Received encoding command message: {message}")
+                    logger.info(f"Received encoding command message: {message}")
                     command = ImageEncodingCommand.model_validate_json(message)
                     collected_commands.append(command)
 
@@ -60,14 +63,14 @@ class ImageEncodingWorker:
     def perform_batch_encoding(self, commands: list[ImageEncodingCommand]) -> list[EncodingResults]:
         image_tensors = [self.read_image_as_tensor(cmd) for cmd in commands]
         batch_tensor = torch.stack(image_tensors) # (B, C, H, W)
-        print(f"Performing image preprocessing for tensor size: {batch_tensor.size()}")
+        logger.info(f"Performing image preprocessing for tensor size: {batch_tensor.size()}")
         batch_tensor = self.image_process(batch_tensor).to(self.device) # (B, C, H, W)
-        print(f"Performing batch encoding for tensor size: {batch_tensor.size()}")
+        logger.info(f"Performing batch encoding for tensor size: {batch_tensor.size()}")
 
         with torch.no_grad():
             batch_embeddings = self.image_encoder(batch_tensor) # (B, D)
             batch_embeddings = batch_embeddings.cpu().numpy()
-            print(f"Completed batch encoding, obtained embeddings of shape: {batch_embeddings.shape}")
+            logger.info(f"Completed batch encoding, obtained embeddings of shape: {batch_embeddings.shape}")
         
         encoded_results = [self.parse_encoded_result(cmd, emb) for cmd, emb in zip(commands, batch_embeddings)]
 
@@ -82,7 +85,7 @@ class ImageEncodingWorker:
                     {'data': message}
                 )
         except Exception as e:
-            print(f"Failed to send encoded results: {e}")
+            logger.error(f"Failed to send encoded results: {e}")
         
 
     def handle_failures(self):
@@ -117,16 +120,15 @@ class ImageEncodingWorker:
             
             encoding_commands, last_id = self.collect_encoding_commands(last_id=last_id, batch_size=self.batch_size)
             if encoding_commands:
-                print(f"Collected {len(encoding_commands)} encoding commands.")
+                logger.info(f"Collected {len(encoding_commands)} encoding commands.")
 
                 # Perform batch encoding
-                print("Starting batch encoding...")
                 encoded_results = self.perform_batch_encoding(encoding_commands)
-                print(f"Completed batch encoding for {len(encoded_results)} images.")
+                logger.info(f"Completed batch encoding for {len(encoded_results)} images.")
 
                 # Send back encoded results
                 self.send_encoded_results(encoded_results)
-                print("Sent encoded results back to message queue.")
+                logger.info("Sent encoded results back to message queue.")
             else:
                 # print("No encoding commands to process. Waiting for new commands...")
                 continue

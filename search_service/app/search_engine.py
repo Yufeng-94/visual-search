@@ -8,6 +8,9 @@ from shared_contracts.vector_db.vector_db_contracts import VectorDBContracts
 from shared_contracts.protos.search_service.search_service_pb2 import SearchResponse, ImageResult
 
 from typing import List
+import logging
+
+logger = logging.getLogger("search_service.search_engine")
 
 class SearchEngine:
     def __init__(self):
@@ -40,15 +43,15 @@ class SearchEngine:
 
         # Get the image embedding from the image encoder service
         embedding = self._send_to_image_encoder(image, job_id)
-        print("Embedding received from image encoder.")
+        logger.info("Embedding received from image encoder.")
         
         # Query image from vector database using the embedding
         search_results = self._search_vector_db(embedding, max_results)
-        print("Search results received from vector database.")
+        logger.info("Search results received from vector database.")
 
         # Fetch search results
         results = [self._parse_search_results(point) for point in search_results.points]
-        print("Search results parsed.")
+        logger.info("Search results parsed.")
         return SearchResponse(results=results)
 
     def _send_to_image_encoder(self, image: bytes, job_id: str) -> List[float]:

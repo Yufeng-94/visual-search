@@ -2,6 +2,9 @@ import grpc
 from concurrent import futures
 from shared_contracts.protos.image_encoding_service.image_encoding_service_pb2_grpc import add_ImageEncodingServiceServicer_to_server
 from app.search_endpoint.image_encoding_servicer import ImageEncodingServicer
+import logging
+
+logger = logging.getLogger("image_encoding_service.server")
 
 def serve():
 
@@ -20,7 +23,7 @@ def serve():
 
     # start the server
     server.start()
-    print("Image Encoding Server started on port 50061")
+    logger.info("Image Encoding Server started on port 50061")
     server.wait_for_termination()
 
 if __name__ == '__main__':

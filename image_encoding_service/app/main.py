@@ -5,19 +5,31 @@ import torch
 import grpc
 from concurrent import futures
 import threading
+import logging
+
+foramtter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+
+handler = logging.StreamHandler()
+handler.setFormatter(foramtter)
+
+logger = logging.getLogger("image_encoding_service")
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
 
 def main():
     # Init Async encoding worker for indexing endpoint
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     batch_size = 16
-    print(f"Using device: {device}")
+    logger.info(f"Using device: {device}")
     worker = ImageEncodingWorker(device=device, batch_size=batch_size)
     servicer = ImageEncodingServicer(device=device)
 
 
     worker_thread = threading.Thread(target=worker.run, daemon=True)
     worker_thread.start()
-    print("Message queue worker started in background thread")
+    logger.info("Message queue worker started in background thread")
 
     # Init gRPC server for search endpoint
     serve(servicer=servicer)
@@ -33,7 +45,7 @@ def serve(servicer: ImageEncodingServicer):
 
     server.add_insecure_port('[::]:50071')
     server.start()
-    print("Server started on port 50071")
+    logger.info("Server started on port 50071")
     server.wait_for_termination()
 
 if __name__ == "__main__":

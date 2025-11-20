@@ -5,6 +5,9 @@ import time
 import asyncio
 import threading
 from shared_contracts.message_queue.message_data_models import EncodingResults
+import logging
+
+logger = logging.getLogger("indexing_service.message_routing")
 
 result_queue: Dict[str, Queue] = {}
 
@@ -29,20 +32,20 @@ def route_message_to_result_queue(
 
                         if encoding_results.job_id in result_queue:
                             result_queue[encoding_results.job_id].put(encoding_results)
-                            print(f"Routed encoding results to queue {encoding_results.job_id}.")
+                            logger.info(f"Routed encoding results to queue {encoding_results.job_id}.")
                         else:
-                            print(f"No queue found for job_id: {encoding_results.job_id}")
+                            logger.warning(f"No queue found for job_id: {encoding_results.job_id}")
 
                         last_id = message_id
 
         except Exception as e:
-            print(f"Error routing message: {str(e)}")
+            logger.error(f"Error routing message: {str(e)}")
             time.sleep(0.5)  # Prevent tight loop on error
 
 def add_to_result_queue(job_id: str) -> None:
     q = Queue()
     result_queue[job_id] = q
-    print(f"Created result queue for job_id: {job_id}")
+    logger.info(f"Created result queue for job_id: {job_id}")
 
 def start_redis_router(channel: str, redis_client: redis.Redis) -> threading.Thread:
     """Start the async router in background thread"""

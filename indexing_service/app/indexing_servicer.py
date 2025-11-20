@@ -22,6 +22,10 @@ from app.message_routing import (
     start_redis_router,
 )
 
+import logging
+
+logger = logging.getLogger("indexing_service.indexing_servicer")
+
 class IndexingServicer(IndexingServiceServicer):
     def __init__(self):
         self.s3_client = boto3.client(
@@ -70,7 +74,7 @@ class IndexingServicer(IndexingServiceServicer):
                 self.redis_client,
             )
             self.router_started = True
-            print(f"Started Redis router for {MessageChannels.INDEXING_EVENTS}")
+            logger.info(f"Started Redis router for {MessageChannels.INDEXING_EVENTS}")
         try:
             responses = [
                 process_single_image(
@@ -86,6 +90,7 @@ class IndexingServicer(IndexingServiceServicer):
                 for image_key, metadata_key in zip(image_keys, metadata_keys)
             ]
         except Exception as e:
+            logger.error(f"Indexing failed due to error: {e}")
             raise Exception(f"Indexing failed due to error {e}")
 
         return IndexImagesResponse(

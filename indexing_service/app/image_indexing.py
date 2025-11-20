@@ -11,8 +11,10 @@ from shared_contracts.message_queue.message_contract import MessageContract
 from shared_contracts.vector_db.vector_db_contracts import VectorDBContracts
 from app.message_routing import result_queue, add_to_result_queue
 from app.process_image_metadata import extract_useful_metadata
-
+import logging
 import time
+
+logger = logging.getLogger("indexing_service.image_indexing")
 
 def process_single_image(
         src_image_bucket: str, 
@@ -26,7 +28,7 @@ def process_single_image(
         ):
     try:
         job_id = str(uuid.uuid4())
-        print(f"Processing image {image_key} with job_id {job_id}")
+        logger.info(f"Processing image {image_key} with job_id {job_id}")
 
         # Send url to message queue
         send_image_encoding_command(
@@ -35,18 +37,17 @@ def process_single_image(
             job_id, 
             redis_client
             )
-        print(f"Sent encoding command for {image_key} with job_id {job_id}")
+        logger.info(f"Sent encoding command for {image_key} with job_id {job_id}")
 
         # Wait for processing result
         encoding_result = wait_for_model_result_sync(job_id, timeout=60)
-        print(f"Received encoding result for {image_key} with job_id {job_id}")
+        logger.info(f"Received encoding result for {image_key} with job_id {job_id}")
 
         # Save image to S3
         save_image_to_s3(
             s3_client, src_image_bucket, dest_image_bucket, image_key
             )
-        print(f"Saved image {image_key} to destination bucket {dest_image_bucket}")
-
+        logger.info(f"Saved image {image_key} to destination bucket {dest_image_bucket}")
         # Add S3 url to metadata
         image_metadata = process_metadata(
             metadata_bucket, 
@@ -55,7 +56,7 @@ def process_single_image(
             image_key,
             s3_client,
             )
-        print(f"Processed metadata for image {image_key}")
+        logger.info(f"Processed metadata for image {image_key}")
 
         # Store metadata and image embedding in vector DB
         store_in_vector_db(
@@ -63,12 +64,13 @@ def process_single_image(
             image_metadata, 
             encoding_result,        
         )
-        print(f"Stored image embedding and metadata for {image_key} in vector DB")
+        logger.info(f"Stored image embedding and metadata for {image_key} in vector DB")
 
         # Return processing status
         return "PROCESSED"
     
     except Exception as e:
+        logger.error(f"Failed to process image {image_key}: {str(e)}")
         return f"FAILED: {str(e)}"
 
 def send_image_encoding_command(
@@ -105,6 +107,7 @@ def wait_for_model_result_sync(
         return encoding_results
 
     except Exception as e:
+        logger.error(f"Error waiting for model result for job_id: {job_id}, error: {str(e)}")
         raise Exception(f"Error waiting for model result for job_id: {job_id}, error: {str(e)}")
 
     finally:
@@ -129,6 +132,7 @@ def save_image_to_s3(
             Key=image_key
         )
     except Exception as e:
+        logger.error(f"Error saving image to S3: {str(e)}")
         raise Exception(f"Error saving image to S3: {str(e)}")
 
 def process_metadata(
@@ -140,7 +144,7 @@ def process_metadata(
         ) -> dict:
     
     # Download metadata
-    print(f"Downloading metadata {metadata_key} from {metadata_bucket}")
+    logger.info(f"Downloading metadata {metadata_key} from {metadata_bucket}")
     response = s3_client.get_object(
         Bucket=metadata_bucket,
         Key=metadata_key
@@ -175,6 +179,7 @@ def store_in_vector_db(
             points=[point],
         )
     except Exception as e:
+        logger.error(f"Error storing data in vector DB: {str(e)}")
         raise Exception(f"Error storing data in vector DB: {str(e)}")
 
 def get_image_keys_from_s3(
