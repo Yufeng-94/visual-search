@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "vs-admin"
+version = "0.1.0"
+description = "Admin code for visual search app"
+packages = [{include = "admin"}]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13" 
+grpcio = "==1.75.1"
+grpcio-tools = "==1.75.1"
+pytest = "==8.4.2"
+boto3 = "==1.40.58"
+redis = "==7.0.0"
+qdrant-client = "==1.15.1"
+requests = "==2.32.5"
+shared_contracts = {path = "../shared_contracts", develop = true}
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
