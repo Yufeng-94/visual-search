@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "search-service"
+version = "0.1.0"
+description = "Search service for visual search app"
+packages = [
+    {include = "app"},
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13" 
+grpcio = "==1.75.1"
+grpcio-tools = "==1.75.1"
+pytest = "==8.4.2"
+boto3 = "==1.40.58"
+qdrant-client = "==1.15.1"
+shared_contracts = {path = "./shared_contracts"}
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

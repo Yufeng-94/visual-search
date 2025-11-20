@@ -1,0 +1,164 @@
+openapi: 3.0.4
+info:
+  title: API Contract between client and entry point
+  version: 2.0.0
+  description: API Contract between client and entry point 
+paths:
+  /:
+    get:
+      operationId: getRoot
+      summary: Root page
+      responses:
+        "200":
+          description: Root page response
+          content:
+            text/html:
+              schema:
+                type: string
+  /health:
+    get:
+      operationId: getHealth
+      summary: Health check endpoint
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                  - status
+        "500":
+          $ref: '#/components/responses/ServerError'
+  /api/index:
+    post:
+      operationId: indexImages
+      summary: Indexing images to database
+      description: |
+        A request to index images to database by 
+        specifying image storage and metadata buckets.
+      responses:
+        "200":
+          description: Indexing successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    format: uuid
+                  message:
+                    type: string
+                required:
+                  - job_id
+                  - message
+              example:
+                job_id: "123e4567-e89b-12d3-a456-426614174000"
+                message: "Indexing started successfully"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/ServerError'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                image_storage_bucket:
+                  type: string
+                metadata_storage_bucket:
+                  type: string
+              required:
+                - image_storage_bucket
+                - metadata_storage_bucket
+  /api/search:
+    post:
+      operationId: searchImages
+      summary: Searching similar images
+      description: |
+       A request to search similar images by uploading an image.
+      responses:
+        "200":
+          description: Search successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  similar_images: 
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RetrievedImage'
+                  processing_ms:
+                    type: number
+                    format: integer
+                  search_id:
+                    type: string
+                required:
+                  - similar_images
+                  - processing_ms
+                  - search_id
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/ServerError'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The image file to be uploaded for searching similar images.
+              required:
+                - file
+servers:
+  - url: http://{host}:{port}/ 
+    variables:
+      host:
+        default: localhost
+      port:
+        default: "8080"
+
+components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error_code:
+                type: string
+                enum: ["INVALID_FORMAT", "FILE_NOT_FOUND", "MISSING_FIELDS"]
+              error_message:
+                type: string
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error_message:
+                type: string
+  schemas:
+    RetrievedImage:
+      type: object
+      properties:
+        image_url:
+          type: string
+          format: uri
+        similarity_score:
+          type: number
+      required:
+        - image_url
+        - similarity_score

@@ -18,5 +18,12 @@ tests/integration/vector_db_test/
 # torch cache
 *.pth
 
-# .sh scripts
-scripts/*.sh
+# dev scripts
+dev/
+
+# vs dev container
+.devcontainer/
+*Dockerfile.dev
+
+# Poetry
+*poetry.lock
